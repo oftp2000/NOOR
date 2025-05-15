@@ -14,6 +14,7 @@ class Package extends Model
         'status',
         'included_services',
         'excluded_services',
+        'image',
     ];
 
     protected $casts = [

@@ -1,4 +1,3 @@
-{{-- resources/views/admin/packages/edit.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Modifier le forfait')
@@ -15,15 +14,11 @@
                 {{ $package->status ? 'Actif' : 'Inactif' }}
             </span>
         </div>
-        
-        <form action="{{ route('admin.packages.update', $package->id) }}" 
-              method="POST" 
-              enctype="multipart/form-data"
-              class="space-y-6">
+
+        <form action="{{ route('admin.packages.update', $package->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
-            
-            <!-- Image Upload -->
+
             <div x-data="{ imagePreview: '{{ $package->image ? asset('storage/'.$package->image) : '' }}' }" class="space-y-2">
                 <label class="block text-sm font-medium text-gray-700">Image du forfait</label>
                 <div class="flex items-center space-x-4">
@@ -38,136 +33,114 @@
                         </div>
                     </div>
                     <div class="flex-1">
-                        <input type="file" name="image" id="image" 
-                               class="hidden" 
-                               @change="imagePreview = URL.createObjectURL($event.target.files[0])">
-                        <label for="image" 
-                               class="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                            <i data-lucide="upload" class="w-4 h-4 mr-2"></i>
-                            Changer l'image
-                        </label>
-                        @if($package->image)
-                        <button type="button" x-show="imagePreview" @click="imagePreview = null; document.getElementById('image').value = ''"
-                                class="ml-2 inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                            <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                            Supprimer
+                        <input type="file" name="image" id="image" class="hidden" @change="imagePreview = URL.createObjectURL($event.target.files[0])">
+                        <label for="image" class="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"> <i data-lucide="upload" class="w-4 h-4 mr-2"></i>Changer l'image</label>
+                        <button type="button" x-show="imagePreview" @click="imagePreview = null; document.getElementById('image').value = ''" class="ml-2 inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>Supprimer
                         </button>
-                        @endif
                     </div>
                 </div>
             </div>
-            
-            <!-- Nom -->
+
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700">Nom du forfait</label>
-                <input type="text" name="name" id="name" 
-                       value="{{ old('name', $package->name) }}"
-                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                       required>
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <input type="text" name="name" id="name" value="{{ old('name', $package->name) }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
             </div>
-            
-            <!-- Description -->
+
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="4"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                          required>{{ old('description', $package->description) }}</textarea>
-                @error('description')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <textarea name="description" id="description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>{{ old('description', $package->description) }}</textarea>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Prix -->
                 <div>
                     <label for="price" class="block text-sm font-medium text-gray-700">Prix (DH)</label>
-                    <input type="number" name="price" id="price" 
-                           value="{{ old('price', $package->price) }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                           min="0" step="100" required>
-                    @error('price')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    <input type="number" name="price" id="price" value="{{ old('price', $package->price) }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="0" step="100" required>
                 </div>
-                
-                <!-- Durée -->
+
                 <div>
                     <label for="duration" class="block text-sm font-medium text-gray-700">Durée (jours)</label>
-                    <input type="number" name="duration" id="duration" 
-                           value="{{ old('duration', $package->duration) }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                           min="1" required>
-                    @error('duration')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+                    <input type="number" name="duration" id="duration" value="{{ old('duration', $package->duration) }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1" required>
                 </div>
-                
-                <!-- Statut -->
+
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
-                    <select name="status" id="status"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                    <select name="status" id="status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         <option value="1" {{ old('status', $package->status) ? 'selected' : '' }}>Actif</option>
                         <option value="0" {{ !old('status', $package->status) ? 'selected' : '' }}>Inactif</option>
                     </select>
                 </div>
             </div>
-            
-            <!-- Services Inclus -->
-            <div x-data="{ services: {{ json_encode(old('included_services', $package->included_services ?? [])) }}, newService: '' }">
-                <label class="block text-sm font-medium text-gray-700">Services inclus</label>
-                <div class="mt-1 space-y-2">
-                    <template x-for="(service, index) in services" :key="index">
+
+            <input type="hidden" name="included_services[]" value="">
+            <input type="hidden" name="excluded_services[]" value="">
+
+            <div x-data="{
+                includedServices: {{ json_encode(old('included_services', $package->included_services ?? [])) }},
+                excludedServices: {{ json_encode(old('excluded_services', $package->excluded_services ?? [])) }},
+                newIncludedService: '',
+                newExcludedService: '',
+                addIncludedService() {
+                    if (this.newIncludedService.trim()) {
+                        this.includedServices.push(this.newIncludedService.trim());
+                        this.newIncludedService = '';
+                    }
+                },
+                addExcludedService() {
+                    if (this.newExcludedService.trim()) {
+                        this.excludedServices.push(this.newExcludedService.trim());
+                        this.newExcludedService = '';
+                    }
+                },
+                removeIncludedService(i) { this.includedServices.splice(i, 1) },
+                removeExcludedService(i) { this.excludedServices.splice(i, 1) }
+            }">
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-gray-700">Services inclus</label>
+                    <template x-for="(service, i) in includedServices" :key="i">
                         <div class="flex items-center space-x-2">
-                            <input type="text" x-model="services[index]"
-                                   :name="'included_services[' + index + ']'"
-                                   class="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                            <button type="button" @click="services.splice(index, 1)"
-                                    class="text-red-500 hover:text-red-700 transition-colors duration-200">
+                            <input type="text" x-model="includedServices[i]" name="included_services[]" class="flex-1 border border-gray-300 rounded-md py-2 px-3">
+                            <button type="button" @click="removeIncludedService(i)" class="text-red-500 hover:text-red-700">
                                 <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </template>
                     <div class="flex items-center space-x-2">
-                        <input type="text" x-model="newService" 
-                               placeholder="Ajouter un service"
-                               class="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                        <button type="button" @click="if(newService.trim()) { services.push(newService); newService = ''; }"
-                                class="text-green-500 hover:text-green-700 transition-colors duration-200">
+                        <input type="text" x-model="newIncludedService" @keyup.enter="addIncludedService" placeholder="Ajouter un service inclus" class="flex-1 border border-gray-300 rounded-md py-2 px-3">
+                        <button type="button" @click="addIncludedService" class="text-green-500 hover:text-green-700">
                             <i data-lucide="plus" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Services Exclus -->
-            <div x-data="{ services: {{ json_encode(old('excluded_services', $package->excluded_services ?? [])) }}, newService: '' }">
-                <label class="block text-sm font-medium text-gray-700">Services non inclus</label>
-                <div class="mt-1 space-y-2">
-                    <template x-for="(service, index) in services" :key="index">
+
+                <div class="mt-6 space-y-4">
+                    <label class="block text-sm font-medium text-gray-700">Services non inclus</label>
+                    <template x-for="(service, i) in excludedServices" :key="i">
                         <div class="flex items-center space-x-2">
-                            <input type="text" x-model="services[index]"
-                                   :name="'excluded_services[' + index + ']'"
-                                   class="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                            <button type="button" @click="services.splice(index, 1)"
-                                    class="text-red-500 hover:text-red-700 transition-colors duration-200">
+                            <input type="text" x-model="excludedServices[i]" name="excluded_services[]" class="flex-1 border border-gray-300 rounded-md py-2 px-3">
+                            <button type="button" @click="removeExcludedService(i)" class="text-red-500 hover:text-red-700">
                                 <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </template>
                     <div class="flex items-center space-x-2">
-                        <input type="text" x-model="newService" 
-                               placeholder="Ajouter un service"
-                               class="flex-1 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-200">
-                        <button type="button" @click="if(newService.trim()) { services.push(newService); newService = ''; }"
-                                class="text-green-500 hover:text-green-700 transition-colors duration-200">
+                        <input type="text" x-model="newExcludedService" @keyup.enter="addExcludedService" placeholder="Ajouter un service non inclus" class="flex-1 border border-gray-300 rounded-md py-2 px-3">
+                        <button type="button" @click="addExcludedService" class="text-green-500 hover:text-green-700">
                             <i data-lucide="plus" class="w-5 h-5"></i>
                         </button>
                     </div>
                 </div>
             </div>
-            
-            <div class="flex justify-end space-x-3 pt-
+
+             <div class="flex justify-end pt-6 space-x-3">
+                <a href="{{ route('admin.packages.index') }}" class="inline-flex items-center px-6 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i data-lucide="x" class="w-4 h-4 mr-2"></i>Annuler
+                </a>
+                <button type="submit" class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <i data-lucide="save" class="w-4 h-4 mr-2"></i>Enregistrer les modifications
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

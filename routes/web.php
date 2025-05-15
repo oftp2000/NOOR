@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\User\UserDashboardController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ClientController;
 
 
 // Public routes
@@ -28,7 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function() {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('packages', PackageController::class)->except(['show']);
-    // Other admin routes...
+     Route::resource('reservations', ReservationController::class);
+     Route::resource('clients', ClientController::class);
 });
 
 // Regular user routes

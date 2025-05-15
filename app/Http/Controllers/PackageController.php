@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -31,25 +30,40 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
+        
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'duration' => 'required|integer|min:1',
-            'status' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'included_services' => 'nullable|array',
-            'excluded_services' => 'nullable|array',
+            'name'                   => 'required|string|max:255',
+            'description'            => 'required|string',
+            'price'                  => 'required|numeric|min:0',
+            'duration'               => 'required|integer|min:1',
+            'status'                 => 'required|boolean',
+            'image'                  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'included_services'      => 'nullable|array',
+            'included_services.*'    => 'nullable|string|max:255',
+            'excluded_services'      => 'nullable|array',
+            'excluded_services.*'    => 'nullable|string|max:255',
         ]);
 
+        // Filtrer les valeurs vides
+        $validated['included_services'] = array_values(array_filter(
+            $request->input('included_services', []),
+            fn($s) => trim($s) !== ''
+        ));
+        $validated['excluded_services'] = array_values(array_filter(
+            $request->input('excluded_services', []),
+            fn($s) => trim($s) !== ''
+        ));
+
+        // Gestion de l'image
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('packages', 'public');
         }
 
         Package::create($validated);
 
-        return redirect()->route('admin.packages.index')
-            ->with('success', 'Forfait créé avec succès!');
+        return redirect()
+            ->route('admin.packages.index')
+            ->with('success', 'Forfait créé avec succès !');
     }
 
     /**
@@ -74,18 +88,30 @@ class PackageController extends Controller
     public function update(Request $request, Package $package)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'duration' => 'required|integer|min:1',
-            'status' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'included_services' => 'nullable|array',
-            'excluded_services' => 'nullable|array',
+            'name'                   => 'required|string|max:255',
+            'description'            => 'required|string',
+            'price'                  => 'required|numeric|min:0',
+            'duration'               => 'required|integer|min:1',
+            'status'                 => 'required|boolean',
+            'image'                  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'included_services'      => 'nullable|array',
+            'included_services.*'    => 'nullable|string|max:255',
+            'excluded_services'      => 'nullable|array',
+            'excluded_services.*'    => 'nullable|string|max:255',
         ]);
 
+        // Filtrer les valeurs vides
+        $validated['included_services'] = array_values(array_filter(
+            $request->input('included_services', []),
+            fn($s) => trim($s) !== ''
+        ));
+        $validated['excluded_services'] = array_values(array_filter(
+            $request->input('excluded_services', []),
+            fn($s) => trim($s) !== ''
+        ));
+
+        // Si nouvelle image, on supprime l'ancienne
         if ($request->hasFile('image')) {
-            // Supprime l'ancienne image si elle existe
             if ($package->image) {
                 Storage::disk('public')->delete($package->image);
             }
@@ -94,8 +120,9 @@ class PackageController extends Controller
 
         $package->update($validated);
 
-        return redirect()->route('admin.packages.index')
-            ->with('success', 'Forfait mis à jour avec succès!');
+        return redirect()
+            ->route('admin.packages.index')
+            ->with('success', 'Forfait mis à jour avec succès !');
     }
 
     /**
@@ -109,7 +136,8 @@ class PackageController extends Controller
 
         $package->delete();
 
-        return redirect()->route('admin.packages.index')
-            ->with('success', 'Forfait supprimé avec succès!');
+        return redirect()
+            ->route('admin.packages.index')
+            ->with('success', 'Forfait supprimé avec succès !');
     }
 }
